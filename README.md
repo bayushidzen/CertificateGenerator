@@ -3,7 +3,7 @@
 
 ## Описание приложения
 ### Внешний вид
-<img width="661" height="633" alt="image" src="https://github.com/user-attachments/assets/7d95b09b-d349-4853-bbf0-88445d1bb498" />
+<div align="center"><img width="661" height="633" alt="image" src="https://github.com/user-attachments/assets/7d95b09b-d349-4853-bbf0-88445d1bb498" /></div>
 
 Внешний вид приложения довольно прост, но лаконичен и интуитивно понятен. В левой части находятся поля необходимые для заполнения, справа нужно выбрать папку где лежат "эксельки" с результатами олимпиад и папку куда сохранить готовую справку.
 Внизу окна расположен прогресс бар, позволяющий примернр понять когда программа закончит работу.
@@ -19,7 +19,7 @@
 8) К сожалению под разные года программу адаптировать не получилось в связи с сильно различающимися файлами результатов олимпиад.
 
 ### Результат работы
-<img width="724" height="404" alt="image" src="https://github.com/user-attachments/assets/f5b586d8-88fb-4336-a780-77564a6216e1" />
+<div align="center"><img width="724" height="404" alt="image" src="https://github.com/user-attachments/assets/f5b586d8-88fb-4336-a780-77564a6216e1" /></div>
 
 В результате работы программы формируется вордовский файл со справкой содержащей ФИО ученика в дательном падеже, его школу, класс обучения и участия и баллы со статусом по соответствующей олимпиаде.
 В итоге программа значительно ускоряет и упрощает формирование справок коллегами, несмотря на то что она заточена только под один учебный год использоваться будет в течении нескольких лет.
@@ -30,15 +30,14 @@
 ### Работа с xlsx
 Тут в целом все довольно просто, через GetFiles получаем все файлы в папке, далее проходимся по ним foreach'ем и ищем нужные данные, попутно двигая прогрессбар:
 
-`foreach (string file in files)
+<pre><code>foreach (string file in files)
 {
     using (var package = new ExcelPackage(new FileInfo(file), false))
     {
         var worksheet = package.Workbook.Worksheets[0];
         int rowCount = worksheet.Dimension.Rows;
         int colCount = worksheet.Dimension.Columns;
-        int statusRowNumber = GetStatusRowNumber(worksheet, colCount, _statusCaption);
-        
+        int statusRowNumber = GetStatusRowNumber(worksheet, colCount, _statusCaption);        
         for (int row = 2; row <= rowCount; row++)
         {
             string studentID = worksheet.Cells[row, 3].Text;
@@ -61,7 +60,7 @@
         }
     }        
   MainForm._staticProgressBar.Value++;
-  }`
+  }</code></pre>
 
 Все поля выбирались по номерам столбцов в документах заминка случилась только со столбцом статуса, потому что в разных документах он "гуляет" по столбцам и пришлось его искать по названию. Также нужно было название школы отформатировать, добавить определенные кавычки. Данный метод кроме собранных данных, возвращает еще название школы и класс, за который была пройдена олимпиада.
 
@@ -69,7 +68,7 @@
 ### Обработка данных
 Получив данные в прошлом методе, занимаюсь их обработкой, тут надо правильно сформировать итоговый текст в зависимости от пола ребенка и учесть в одной олимпиаде принимал участие ребенок или в нескольких:
 
-`var data = GetData.GetFiles(MainForm._selectedFolderOlimpiads, out OOName, out participationClass, student);
+<pre><code>var data = GetData.GetFiles(MainForm._selectedFolderOlimpiads, out OOName, out participationClass, student);
 if (studentsSex == "он")
 {
     participated = "принял";
@@ -107,11 +106,11 @@ else
     }
     certificateBodyText = certificateBodyText.Remove(certificateBodyText.Length - 1, 1) + ".";
 }
-return certificateBodyText;`
+return certificateBodyText;</code></pre>
 
 ###### Также нужно конвертировать ФИО в дательный падеж, пример конвертации имени, а фамилия и отчество делаются по аналогии:
 
-`private static string GetCorrectFirstName(string firstName, string studentsSex)
+<pre><code>private static string GetCorrectFirstName(string firstName, string studentsSex)
 {
     string name = "";
     if (studentsSex == "он")
@@ -140,13 +139,13 @@ return certificateBodyText;`
         }
     }
     return name;
-}`
+}</code></pre>
 
 ### Формирование docx
 ###### Дальше собираю вордовский документ, разделив задачу на несколько этапов и классов.
 Сначала делаю основной класс, в котором формирую структуру будущего документа и подключаю класс WordprocessingDocument.
 
-`using (WordprocessingDocument document = WordprocessingDocument.Create(
+<pre><code>using (WordprocessingDocument document = WordprocessingDocument.Create(
     certificateName,
     WordprocessingDocumentType.Document))
 {
@@ -174,11 +173,11 @@ return certificateBodyText;`
     paragraphHelper.AddEmptyLine(document.MainDocumentPart.Document.Body);
     paragraphHelper.AddTable(document.MainDocumentPart.Document.Body, _employeePosition, _employeeFIO);
     document.Save();
-}`
+}</code></pre>
 
 ###### В отдельных классе и методе добавляю верхний колонтитул:
 
-`public static Header AddHeaderContent(WordprocessingDocument document, string text, string imagePath) 
+<pre><code>public static Header AddHeaderContent(WordprocessingDocument document, string text, string imagePath) 
 {
     Header header = new Header();
     Paragraph imageParagraph = new Paragraph();
@@ -197,16 +196,11 @@ return certificateBodyText;`
     textParagraph.AppendChild(textRun);
     header.AppendChild(textParagraph);
     return header;
-}`
+}</code></pre>
 
 ###### И чтобы избежать конфликтов using'ов опять же в отдельных классе и методе добавляю изображение в верхний колонтитул. Это была самая трудная часть по созданию вордовского файла:
 
-`public class AddIMGHeader
-{
-    public static readonly long widthPixels = 700;
-    public static readonly long heightPixels = 70;
-
-    public static Drawing AddLogo(WordprocessingDocument doc, string imagePath)
+<pre><code>public static Drawing AddLogo(WordprocessingDocument doc, string imagePath)
     {
         HeaderPart headerPart = doc.MainDocumentPart.HeaderParts.First();
         ImagePart imagePart = headerPart.AddImagePart(ImagePartType.Png);
@@ -219,11 +213,11 @@ return certificateBodyText;`
         long heightEmu = heightPixels * 9525;
         return CreateDrawingElement(imageId, widthEmu, heightEmu);
     }
-}`
+}</code></pre>
 
 ###### С созданием "тела" особо проблем не возникло:
 
-`public void AddCaptionParagraph(Body body, string text)
+<pre><code>public void AddCaptionParagraph(Body body, string text)
 {
     Paragraph para = body.AppendChild(new Paragraph(new ParagraphProperties(new Justification { Val = JustificationValues.Center})));
     Run run = para.AppendChild(new Run(new RunProperties(new RunFonts(){HighAnsi = "Times New Roman"}, new Bold(), new FontSize { Val = "28" }), new Text(text)));
@@ -240,11 +234,11 @@ public void AddMainParagraph(Body body, string text)
         run.AppendChild(new Text(line));
         run.AppendChild(new Break());
     }
-}`
+}</code></pre>
 
 ###### Список ответственных лиц храню в обычном словаре:
 
-`public static Dictionary<string, string> GetEmployees()
+<pre><code>public static Dictionary<string, string> GetEmployees()
 {
     var employees = new Dictionary<string, string>
     {
@@ -254,4 +248,4 @@ public void AddMainParagraph(Body body, string text)
         {"Зам Г. Г.", "и.о. директора"}
     };
     return employees;
-}`
+}</code></pre>
