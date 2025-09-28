@@ -47,7 +47,7 @@
                     subject = GetSubject(line[0]);
                     result = GetScoreText(line[1]);
                     status = line[2].ToString();
-                    certificateBodyText += $"\n    - по {subject} с результатом {result}, что соответствует статусу «{status}»;";
+                    certificateBodyText += $"\n- по {subject} с результатом {result}, что соответствует статусу «{status}»;";
                 }
                 certificateBodyText = certificateBodyText.Remove(certificateBodyText.Length - 1, 1) + ".";
             }

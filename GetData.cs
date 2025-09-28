@@ -8,7 +8,6 @@ namespace CertificateGenerator
         {
             OONameOut = String.Empty;
             participationClassOut = String.Empty;
-            ExcelPackage.License.SetNonCommercialPersonal("Username");
             var data = new List<List<string>>();
             string[] files = Directory.GetFiles(folderPath, "*.xlsx");
             int totalFiles = files.Length;
